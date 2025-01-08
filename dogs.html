@@ -1,0 +1,295 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dog Varieties</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f4f4f4;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 50px auto;
+            padding: 20px;
+            background-color: #fff;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+        
+        h1 {
+            text-align: center;
+            margin-bottom: 40px;
+            color: #333;
+        }
+
+        /* Cart Section */
+        .cart {
+            background-color: #f9f9f9;
+            border: 1px solid #ddd;
+            padding: 20px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+        }
+
+        .cart h2 {
+            margin: 0 0 10px;
+        }
+
+        .cart ul {
+            list-style: none;
+            padding: 0;
+        }
+
+        .cart ul li {
+            padding: 10px 0;
+            border-bottom: 1px solid #ddd;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .pet-card {
+            display: inline-block;
+            width: 25%;
+            margin: 10px;
+            padding: 20px;
+            background-color: #f9f9f9;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            text-align: center;
+            transition: transform 0.3s ease;
+        }
+        
+        .pet-card:hover {
+            transform: scale(1.05);
+        }
+        
+        .pet-card img {
+            width: 100%;
+            height: auto;
+            border-radius: 8px;
+        }
+        
+        .pet-card h2 {
+            margin: 20px 0 10px;
+            font-size: 24px;
+            color: #555;
+        }
+        
+        .pet-card p {
+            font-size: 16px;
+            color: #777;
+        }
+
+        .button {
+            padding: 10px 15px;
+            background-color: #28a745;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            margin-top: 10px;
+        }
+
+        .quantity-controls {
+            display: flex;
+            align-items: center;
+        }
+
+        .quantity-controls button {
+            margin: 0 5px;
+            padding: 5px;
+            background-color: #ddd;
+            border: none;
+            cursor: pointer;
+        }
+
+        /* Checkout Button */
+        .checkout {
+            margin-top: 20px;
+            text-align: right;
+        }
+
+        .checkout button {
+            padding: 10px 20px;
+            background-color: #28a745;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <!-- Cart Section -->
+        <div class="cart">
+            <h2>Cart</h2>
+            <ul id="cart-items">
+                <!-- Cart items will be dynamically inserted here -->
+            </ul>
+            <div class="checkout">
+                <button class="button" onclick="checkout()">Checkout</button>
+            </div>
+        </div>
+
+        <h1>Dog Varieties</h1>
+        <div id="dogs-list">
+            <!-- Dog varieties will be dynamically inserted here -->
+        </div>
+    </div>
+
+    <script>
+        // Dog data
+        const dogs = [
+            {
+                name: 'Golden Retriever',
+                image: 'golden-retriever.jpg',
+                description: 'Breed Information: Friendly, Intelligent, Devoted.',
+                price: 90000  // Price in INR
+            },
+            {
+                name: 'German Shepherd',
+                image: 'german-shepherd.jpg',
+                description: 'Breed Information: Confident, Courageous, Smart.',
+                price: 110000  // Price in INR
+            },
+            {
+                name: 'Poodle',
+                image: 'poodle.jpg',
+                description: 'Breed Information: Active, Proud, Very Smart.',
+                price: 75000  // Price in INR
+            },
+            {
+                name: 'Bulldog',
+                image: 'bulldog.jpg',
+                description: 'Breed Information: Docile, Willful, Friendly.',
+                price: 135000  // Price in INR
+            },
+            {
+                name: 'Labrador Retriever',
+                image: 'labrador-retriever.jpg',
+                description: 'Breed Information: Friendly, Outgoing, Gentle.',
+                price: 95000  // Price in INR
+            },
+            {
+                name: 'Beagle',
+                image: 'beagle.jpg',
+                description: 'Breed Information: Curious, Merry, Friendly.',
+                price: 60000  // Price in INR
+            },
+            {
+                name: 'Boxer',
+                image: 'boxer.jpg',
+                description: 'Breed Information: Fun-Loving, Bright, Active.',
+                price: 80000  // Price in INR
+            },
+            {
+                name: 'Dachshund',
+                image: 'dachshund.jpg',
+                description: 'Breed Information: Curious, Spirited, Stubborn.',
+                price: 70000  // Price in INR
+            },
+            {
+                name: 'Rottweiler',
+                image: 'rottweiler.jpg',
+                description: 'Breed Information: Confident, Fearless, Good-natured.',
+                price: 150000  // Price in INR
+            },
+            {
+                name: 'Siberian Husky',
+                image: 'siberian-husky.jpg',
+                description: 'Breed Information: Friendly, Mischievous, Loyal.',
+                price: 120000  // Price in INR
+            }
+        ];
+
+        // Cart array to store added items with quantity
+        let cart = [];
+
+        // Function to render dogs
+        function renderDogs() {
+            const dogList = document.getElementById('dogs-list');
+            dogList.innerHTML = '';  // Clear the list before rendering
+            dogs.forEach((dog, index) => {
+                const dogCard = document.createElement('div');
+                dogCard.classList.add('pet-card');
+                dogCard.innerHTML = `
+                    <img src="${dog.image}" alt="${dog.name}">
+                    <h2>${dog.name}</h2>
+                    <p>${dog.description}</p>
+                    <p>₹${dog.price.toLocaleString()}</p>
+                    <button class="button" onclick="addToCart(${index})">Add to Cart</button>
+                `;
+                dogList.appendChild(dogCard);
+            });
+        }
+
+        // Function to add a dog to the cart
+        function addToCart(index) {
+            const dog = dogs[index];
+            const existingItem = cart.find(item => item.name === dog.name);
+            
+            if (existingItem) {
+                existingItem.quantity += 1;
+            } else {
+                cart.push({ ...dog, quantity: 1 });
+            }
+            renderCart();
+        }
+
+        // Function to remove a dog from the cart
+        function removeFromCart(index) {
+            cart.splice(index, 1);
+            renderCart();
+        }
+
+        // Function to change the quantity of a dog in the cart
+        function updateQuantity(index, change) {
+            if (cart[index].quantity + change > 0) {
+                cart[index].quantity += change;
+            }
+            renderCart();
+        }
+
+        // Function to render the cart
+        function renderCart() {
+            const cartItems = document.getElementById('cart-items');
+            cartItems.innerHTML = '';  // Clear the list before rendering
+            cart.forEach((dog, index) => {
+                const cartItem = document.createElement('li');
+                cartItem.innerHTML = `
+                    ${dog.name} - ₹${(dog.price * dog.quantity).toLocaleString()} 
+                    <div class="quantity-controls">
+                        <button onclick="updateQuantity(${index}, -1)">-</button>
+                        <span>${dog.quantity}</span>
+                        <button onclick="updateQuantity(${index}, 1)">+</button>
+                        <button class="button" onclick="removeFromCart(${index})">Remove</button>
+                    </div>
+                `;
+                cartItems.appendChild(cartItem);
+            });
+        }
+
+        // Function to handle checkout (you can customize this)
+        function checkout() {
+            if (cart.length === 0) {
+                alert('Your cart is empty.');
+            } else {
+                alert('Proceeding to checkout!');
+                // Custom checkout logic here
+            }
+        }
+
+        // Initial render
+        renderDogs();
+    </script>
+
+</body>
+</html>

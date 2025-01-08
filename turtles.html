@@ -1,0 +1,214 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Turtle Varieties</title>
+    <style>
+        /* CSS Styles */
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f4f4f4;
+        }
+          
+        .container {
+            max-width: 1200px;
+            margin: 50px auto;
+            padding: 20px;
+            background-color: #fff;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+        
+        h1 {
+            text-align: center;
+            margin-bottom: 40px;
+            color: #333;
+        }
+        
+        .cart {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px;
+            background-color: #f9f9f9;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            margin-bottom: 20px;
+        }
+        
+        .pet-card {
+            display: inline-block;
+            width: 30%;
+            margin: 10px;
+            padding: 20px;
+            background-color: #f9f9f9;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            text-align: center;
+            transition: transform 0.3s ease;
+        }
+        
+        .pet-card:hover {
+            transform: scale(1.05);
+        }
+        
+        .pet-card img {
+            width: 100%;
+            height: auto;
+            border-radius: 8px;
+        }
+        
+        .pet-card h2 {
+            margin: 20px 0 10px;
+            font-size: 24px;
+            color: #555;
+        }
+        
+        .pet-card p {
+            font-size: 16px;
+            color: #777;
+        }
+
+        .button {
+            padding: 10px 15px;
+            background-color: #28a745;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            margin-top: 10px;
+        }
+
+        .cart-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin: 5px 0;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <h1>Turtle Varieties</h1>
+        
+        <div class="cart">
+            <h2>Shopping Cart</h2>
+            <div id="cart-items"></div>
+            <div id="total-price">Total: ₹0</div>
+            <button id="checkout-btn" class="button">Checkout</button>
+        </div>
+
+        <div id="turtles-list">
+            <!-- Turtle varieties will be dynamically inserted here -->
+        </div>
+    </div>
+
+    <script>
+        // JavaScript to handle the data and dynamic rendering of the turtles
+        const turtles = [
+            {
+                name: 'Red-Eared Slider',
+                image: 'red-eared-slider.jpg',  // Replace with actual image URL
+                description: 'Breed Information: Popular, semi-aquatic, with red markings near ears.',
+                price: '₹3,000'
+            },
+            {
+                name: 'Painted Turtle',
+                image: 'painted-turtle.jpg',  // Replace with actual image URL
+                description: 'Breed Information: Colorful, active, enjoys basking in the sun.',
+                price: '₹2,500'
+            },
+            {
+                name: 'Box Turtle',
+                image: 'box-turtle.jpg',  // Replace with actual image URL
+                description: 'Breed Information: Terrestrial, with a domed shell and hinged plastron.',
+                price: '₹4,000'
+            },
+            {
+                name: 'Russian Tortoise',
+                image: 'russian-tortoise.jpg',  // Replace with actual image URL
+                description: 'Breed Information: Hardy, easy to care for, prefers dry environments.',
+                price: '₹5,500'
+            }
+        ];
+
+        const cart = {};
+
+        // Function to generate HTML for each turtle and append it to the page
+        function renderTurtles() {
+            const turtleList = document.getElementById('turtles-list');
+            turtles.forEach(turtle => {
+                const turtleCard = document.createElement('div');
+                turtleCard.classList.add('pet-card');
+                turtleCard.innerHTML = `
+                    <img src="${turtle.image}" alt="${turtle.name}">
+                    <h2>${turtle.name}</h2>
+                    <p>${turtle.description}</p>
+                    <p>${turtle.price}</p>
+                    <button class="button" onclick="addToCart('${turtle.name}', '${turtle.price}')">Add to Cart</button>
+                `;
+                turtleList.appendChild(turtleCard);
+            });
+        }
+
+        // Function to add a turtle to the cart
+        function addToCart(name, price) {
+            if (!cart[name]) {
+                cart[name] = { price, quantity: 1 };
+            } else {
+                cart[name].quantity++;
+            }
+            updateCart();
+        }
+
+        // Function to update the cart display
+        function updateCart() {
+            const cartItems = document.getElementById('cart-items');
+            cartItems.innerHTML = ''; // Clear existing items
+            let total = 0;
+
+            for (const name in cart) {
+                const item = cart[name];
+                total += parseInt(item.price.replace('₹', '').replace(',', ''), 10) * item.quantity;
+
+                const cartItem = document.createElement('div');
+                cartItem.classList.add('cart-item');
+                cartItem.innerHTML = `
+                    ${name} (₹${item.price}) x ${item.quantity} 
+                    <button class="button" onclick="removeFromCart('${name}')">Remove</button>
+                `;
+                cartItems.appendChild(cartItem);
+            }
+
+            document.getElementById('total-price').innerText = `Total: ₹${total}`;
+        }
+
+        // Function to remove a turtle from the cart
+        function removeFromCart(name) {
+            if (cart[name]) {
+                cart[name].quantity--;
+                if (cart[name].quantity <= 0) {
+                    delete cart[name];
+                }
+                updateCart();
+            }
+        }
+
+        // Checkout function
+        document.getElementById('checkout-btn').onclick = function() {
+            alert('Thank you for your purchase!');
+            // Here you can add more checkout logic if needed
+            cart = {}; // Clear the cart
+            updateCart();
+        };
+
+        // Call the function to render the turtles when the page loads
+        renderTurtles();
+    </script>
+
+</body>
+</html>
